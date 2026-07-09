@@ -1,6 +1,8 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+// TAMBAHAN: Import updateEmail
+import { getAuth, onAuthStateChanged, signOut, updateEmail } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+// TAMBAHAN: Import updateDoc
+import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyAuIVPGDAYCtdnTFDAhuQ87WWMdHg5wnY0",
@@ -13,22 +15,29 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db = getFirestore(app); // Tambahkan inisialisasi Firestore
+const db = getFirestore(app); 
 
-// Cek status login dan tarik data profil
+let currentUserData = null; // Menyimpan data sementara untuk form edit
+
 onAuthStateChanged(auth, async (user) => {
     if (user) {
-        // Tampilkan Email
         document.getElementById("profilEmail").textContent = user.email;
 
-        // Tarik data profil lengkap dari tabel 'users'
         try {
             const userSnap = await getDoc(doc(db, "users", user.uid));
             if (userSnap.exists()) {
-                const userData = userSnap.data();
-                document.getElementById("profilNama").textContent = userData.nama || "Warga Tanpa Nama";
-                document.getElementById("profilRT").textContent = userData.rt || "--";
-                document.getElementById("profilRW").textContent = userData.rw || "--";
+                currentUserData = userSnap.data();
+                
+                // Menampilkan ke halaman profil
+                document.getElementById("profilNama").textContent = currentUserData.nama || "Warga Tanpa Nama";
+                document.getElementById("profilRT").textContent = currentUserData.rt || "--";
+                document.getElementById("profilRW").textContent = currentUserData.rw || "--";
+
+                // Memasukkan data ke dalam form modal agar siap diedit
+                document.getElementById("editNama").value = currentUserData.nama;
+                document.getElementById("editEmail").value = user.email;
+                document.getElementById("editRT").value = currentUserData.rt;
+                document.getElementById("editRW").value = currentUserData.rw;
             } else {
                 document.getElementById("profilNama").textContent = "Pengguna Sistem";
             }
@@ -36,9 +45,52 @@ onAuthStateChanged(auth, async (user) => {
             console.error("Gagal mengambil data profil:", error);
             document.getElementById("profilNama").textContent = "Gagal memuat profil";
         }
-
     } else {
         window.location.href = "../index.html";
+    }
+});
+
+// LOGIKA SUBMIT EDIT PROFIL
+document.getElementById("formEditProfil").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById("btnSimpanEdit");
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Menyimpan...';
+
+    const newNama = document.getElementById("editNama").value;
+    const newEmail = document.getElementById("editEmail").value;
+    const newRT = document.getElementById("editRT").value;
+    const newRW = document.getElementById("editRW").value;
+    
+    const user = auth.currentUser;
+
+    try {
+        // 1. Update Email di Authentication (JIKA BERUBAH)
+        if (user.email !== newEmail) {
+            await updateEmail(user, newEmail);
+        }
+
+        // 2. Update Data di Firestore
+        await updateDoc(doc(db, "users", user.uid), {
+            nama: newNama,
+            email: newEmail,
+            rt: newRT,
+            rw: newRW
+        });
+
+        alert("Profil berhasil diperbarui!");
+        // Refresh halaman agar data baru ter-load
+        window.location.reload(); 
+
+    } catch (error) {
+        // Error handling khusus untuk keamanan Firebase Auth
+        if (error.code === 'auth/requires-recent-login') {
+            alert("Untuk alasan keamanan, Anda harus Logout dan Login kembali sebelum dapat mengubah alamat Email.");
+        } else {
+            alert("Gagal memperbarui profil: " + error.message);
+        }
+        btn.disabled = false;
+        btn.textContent = "Simpan Perubahan";
     }
 });
 

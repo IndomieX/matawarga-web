@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, getDocs, updateDoc, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"; // TAMBAHAN: Import Auth
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"; 
 
 const firebaseConfig = {
     apiKey: "AIzaSyAuIVPGDAYCtdnTFDAhuQ87WWMdHg5wnY0",
@@ -13,7 +13,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const auth = getAuth(app); // TAMBAHAN: Inisialisasi Auth
+const auth = getAuth(app); 
 
 // PENJAGAAN RUTE (ROUTE GUARDING)
 onAuthStateChanged(auth, (user) => {
@@ -21,7 +21,7 @@ onAuthStateChanged(auth, (user) => {
         // Cek apakah emailnya berakhiran @admin.com
         if (!user.email.endsWith("@admin.com")) {
             alert("Akses ditolak! Halaman ini khusus Pengurus RT/RW.");
-            window.location.href = "../warga/beranda.html"; // Lempar ke beranda warga
+            window.location.href = "../warga/beranda.html"; 
         } else {
             // Jika benar admin, jalankan fungsi loadData
             loadData();
@@ -106,7 +106,7 @@ window.delLapor = async (id) => {
     }
 };
 
-// Cetak PDF (Dengan Perbaikan CORS Foto)
+// Cetak PDF
 document.getElementById("btnCetakPDF").onclick = () => {
     const el = document.getElementById("tabelLaporan");
     const cols = document.querySelectorAll(".aksi-kolom");
@@ -127,4 +127,15 @@ document.getElementById("btnCetakPDF").onclick = () => {
 };
 
 document.getElementById("btnRefresh").onclick = loadData;
-// loadData(); --> Baris ini sudah dihapus karena dipanggil di dalam fungsi cek login
+
+// LOGIKA LOGOUT ADMIN
+document.getElementById("btnLogoutAdmin").addEventListener("click", async () => {
+    if(confirm("Apakah Anda yakin ingin keluar dari halaman Admin?")) {
+        try {
+            await signOut(auth); // Memutus sesi Firebase secara resmi
+            window.location.href = "../index.html";
+        } catch (error) {
+            alert("Gagal keluar: " + error.message);
+        }
+    }
+});
