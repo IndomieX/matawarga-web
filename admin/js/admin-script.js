@@ -106,23 +106,73 @@ window.delLapor = async (id) => {
     }
 };
 
-// Cetak PDF
+// Cetak PDF (Versi Rapih & Resmi)
 document.getElementById("btnCetakPDF").onclick = () => {
-    const el = document.getElementById("tabelLaporan");
-    const cols = document.querySelectorAll(".aksi-kolom");
+    const btn = document.getElementById("btnCetakPDF");
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Menyusun PDF...';
+    btn.disabled = true;
+
+    // 1. Ambil tabel asli dan gandakan (clone) agar tidak merusak tampilan web
+    const tabelAsli = document.getElementById("tabelLaporan");
+    const cloneTabel = tabelAsli.cloneNode(true);
     
-    cols.forEach(c => c.style.display = "none");
+    // 2. Hapus kolom "Aksi" dari tabel clone (kolom terakhir)
+    const aksiCols = cloneTabel.querySelectorAll(".aksi-kolom");
+    aksiCols.forEach(col => col.remove());
+
+    // 3. Buat container khusus untuk format dokumen PDF
+    const cetakContainer = document.createElement("div");
+    cetakContainer.style.padding = "10px";
+    cetakContainer.style.fontFamily = "'Plus Jakarta Sans', sans-serif";
+    cetakContainer.style.color = "#1e293b";
     
+    // 4. Tambahkan Kop / Judul Laporan Resmi
+    const tanggalCetak = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    cetakContainer.innerHTML = `
+        <div style="text-align: center; margin-bottom: 25px; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px;">
+            <h2 style="margin: 0; font-weight: 800; color: #0f172a; font-size: 24px;">REKAPITULASI PELAPORAN MATA WARGA</h2>
+            <p style="margin: 5px 0 0 0; color: #64748b; font-size: 14px;">Dokumen ini dicetak otomatis pada: ${tanggalCetak}</p>
+        </div>
+    `;
+    
+    // 5. Rapikan style tabel untuk PDF
+    cloneTabel.style.width = "100%";
+    cloneTabel.style.borderCollapse = "collapse";
+    cloneTabel.style.fontSize = "12px";
+    
+    const cells = cloneTabel.querySelectorAll("th, td");
+    cells.forEach(cell => {
+        cell.style.borderBottom = "1px solid #cbd5e1"; // Garis pemisah antar baris
+        cell.style.padding = "12px 10px";
+        cell.style.textAlign = "left";
+        cell.style.verticalAlign = "middle";
+    });
+
+    // Warna background untuk Header Tabel
+    const headerCells = cloneTabel.querySelectorAll("th");
+    headerCells.forEach(th => {
+        th.style.backgroundColor = "#f8fafc";
+        th.style.fontWeight = "bold";
+        th.style.color = "#334155";
+    });
+
+    cetakContainer.appendChild(cloneTabel);
+
+    // 6. Konfigurasi html2pdf
     const opt = {
-        margin:       0.5,
-        filename:     'Rekapan_MataWarga.pdf',
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true }, 
-        jsPDF:        { unit: 'in', format: 'letter', orientation: 'landscape' }
+        margin:       0.4,
+        filename:     'Laporan_Resmi_MataWarga.pdf',
+        image:        { type: 'jpeg', quality: 1 },
+        html2canvas:  { scale: 2, useCORS: true, windowWidth: 1000 }, 
+        jsPDF:        { unit: 'in', format: 'a4', orientation: 'landscape' },
+        pagebreak:    { mode: 'css', avoid: 'tr' } // INI KUNCI AGAR BARIS TIDAK KEPOTONG
     };
 
-    html2pdf().set(opt).from(el).save().then(() => {
-        cols.forEach(c => c.style.display = "");
+    // 7. Eksekusi Cetak
+    html2pdf().set(opt).from(cetakContainer).save().then(() => {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
     });
 };
 
