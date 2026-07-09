@@ -1,0 +1,80 @@
+/* Mengambil font modern 'Plus Jakarta Sans' dari Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: #f8fafc; /* Abu-abu super terang/Off-white */
+    color: #1e293b;
+}
+
+/* --- GAYA KARTU (MATERIAL 3) --- */
+.card-custom {
+    border: none;
+    border-radius: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.03); /* Bayangan sangat halus */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.card-hover:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 15px 40px rgba(13, 110, 253, 0.08); /* Bayangan kebiruan saat di-hover */
+}
+
+/* --- GAYA FORM INPUT --- */
+.input-custom {
+    background-color: #f1f5f9;
+    border: 2px solid transparent;
+    border-radius: 14px;
+    padding: 14px 18px;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+.input-custom:focus {
+    background-color: #ffffff;
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1);
+}
+.input-custom::placeholder {
+    color: #94a3b8;
+}
+
+/* --- GAYA TOMBOL --- */
+.btn-custom {
+    border-radius: 14px;
+    padding: 14px 24px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    transition: all 0.2s ease;
+}
+.btn-primary-custom {
+    background: linear-gradient(135deg, #0d6efd, #0a58ca);
+    border: none;
+    color: white;
+    box-shadow: 0 4px 15px rgba(13, 110, 253, 0.3);
+}
+.btn-primary-custom:hover {
+    background: linear-gradient(135deg, #0b5ed7, #094eb2);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(13, 110, 253, 0.4);
+    color: white;
+}
+
+/* --- NAVBAR GLASSMORPHISM (Efek Kaca Blur) --- */
+.glass-nav {
+    background: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+.glass-nav .navbar-brand {
+    color: #0d6efd !important;
+}
+
+/* --- FOTO LAPORAN --- */
+.img-rounded-top {
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+}

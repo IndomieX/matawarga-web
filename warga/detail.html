@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail Laporan - MataWarga</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-expand glass-nav sticky-top py-3 mb-0 border-bottom">
+        <div class="container d-flex align-items-center">
+            <button onclick="window.history.back()" class="btn btn-link text-primary text-decoration-none fs-4 p-0 me-3">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <span class="navbar-brand fw-bold fs-4 mb-0">Detail Laporan</span>
+        </div>
+    </nav>
+
+    <div id="loadingIndicator" class="text-center py-5 mt-5">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="mt-2 fw-medium text-muted">Memuat detail...</p>
+    </div>
+
+    <div id="detailContent" class="container mb-5 d-none" style="max-width: 600px;">
+        <div class="card-custom overflow-hidden mt-4 shadow-sm">
+            <img id="detailFoto" src="" class="w-100" style="height: 300px; object-fit: cover;" alt="Foto Laporan">
+            
+            <div class="p-4 p-md-5">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <span id="detailKategori" class="text-primary fw-bold small text-uppercase tracking-wide"><i class="fas fa-tag me-1"></i> Kategori</span>
+                    <span id="detailStatus" class="badge bg-secondary-subtle text-secondary-emphasis px-3 py-2 rounded-3 fs-6">Status</span>
+                </div>
+                
+                <h2 id="detailJudul" class="fw-bold mb-3 text-dark">Judul Laporan</h2>
+                
+                <div class="d-flex align-items-center text-muted fw-medium mb-4">
+                    <i class="fas fa-map-marker-alt text-danger fs-5 me-2"></i>
+                    <span id="detailLokasi">Lokasi detail laporan...</span>
+                </div>
+                
+                <hr style="opacity: 0.1;">
+                
+                <p class="text-muted small fw-medium mb-4"><i class="fas fa-clock me-1"></i> Dilaporkan pada: <span id="detailWaktu">...</span></p>
+
+                <div class="d-flex justify-content-between align-items-center bg-light p-3 rounded-4 border">
+                    <div>
+                        <h6 class="mb-0 fw-bold" id="detailAngkaDukung">0 Dukungan</h6>
+                        <small class="text-muted">Bantu laporan ini naik</small>
+                    </div>
+                    <div id="areaTombolDukung">
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/detail-script.js"></script>
+</body>
+</html>
